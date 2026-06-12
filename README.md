@@ -12,9 +12,9 @@ A standalone browser extension to manage and visualize your saved CarGurus listi
 1. Open Chrome and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** (top-right toggle).
 3. Click **Load unpacked**.
-4. Select the `/home/rich/Programming/CarGurusExtension` folder.
+4. Select the `[Project Folder]` folder.
 
 ## Usage
 1. Go to your [CarGurus Saved Cars](https://www.cargurus.com/Cars/saved-listings) page.
-2. Click **🚀 Sync to Nikki Map**.
+2. Click **🚀 Sync to Car Map**.
 3. The dashboard will open automatically in a new tab.

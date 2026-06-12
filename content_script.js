@@ -4,7 +4,7 @@
         
         const btn = document.createElement("button");
         btn.id = "cg-sync-btn";
-        btn.innerHTML = "🚀 Sync to Nikki Map";
+        btn.innerHTML = "🚀 Sync to Car Map";
         btn.style.cssText = "position: fixed; top: 100px; right: 20px; z-index: 9999; padding: 12px 20px; background-color: #1a73e8; color: white; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold;";
 
         btn.onclick = function() {
@@ -32,7 +32,7 @@
                 btn.innerHTML = "✅ Map Updated!";
                 btn.style.backgroundColor = "#2e7d32";
                 setTimeout(() => {
-                    btn.innerHTML = "🚀 Sync to Nikki Map";
+                    btn.innerHTML = "🚀 Sync to Car Map";
                     btn.style.backgroundColor = "#1a73e8";
                 }, 3000);
             } else {
