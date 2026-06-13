@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Car Trip Map Dashboard</title>
-    <meta charset='utf-8' />
-    <link rel='stylesheet' href='../assets/leaflet.css' />
-    <script src='../assets/leaflet.js'></script>
+    <title>Car Search Dashboard</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../assets/leaflet.css" />
+    <script src="../assets/leaflet.js"></script>
     <style>
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
         #sidebar { width: 350px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; z-index: 1000; }
@@ -19,25 +19,26 @@
         .car-card:hover { border-color: #1a73e8; }
         .car-card.hidden { opacity: 0.5; filter: grayscale(100%); }
         .car-card h4 { margin: 0 0 5px 0; font-size: 15px; }
-        .car-card .price { font-weight: bold; color: #2e7d32; }
+        .car-card .details { font-size: 13px; color: #666; }
+        .price { font-weight: bold; color: #2e7d32; }
         .visibility-toggle { position: absolute; top: 12px; right: 12px; transform: scale(1.3); z-index: 5; }
         .car-popup { width: 220px; }
         .car-popup img { width: 100%; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div id='sidebar'>
-        <div class='header'>
+    <div id="sidebar">
+        <div class="header">
             <h2>Car Search Dashboard</h2>
-            <input type='text' id='search-input' placeholder='Search cars...'>
+            <input type="text" id="search-input" placeholder="Search make, model, city...">
         </div>
-        <div class='controls'>
-            <label style='font-size: 12px;'><input type='checkbox' id='autocenter-toggle' checked> Auto-Center</label>
-            <button id='export-csv' class='btn-csv'>Export CSV</button>
+        <div class="controls">
+            <label style="font-size: 12px;"><input type="checkbox" id="autocenter-toggle" checked> Auto-Center</label>
+            <button id="export-csv" class="btn-csv">Export CSV</button>
         </div>
-        <div id='car-list'></div>
+        <div id="car-list"></div>
     </div>
-    <div id='map'></div>
-    <script src='dashboard.js'></script>
+    <div id="map"></div>
+    <script src="dashboard.js"></script>
 </body>
 </html>
