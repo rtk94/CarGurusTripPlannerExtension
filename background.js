@@ -1,3 +1,7 @@
+chrome.action.onClicked.addListener((tab) => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'SYNC_CARS') {
         processAndSaveData(message.data)
@@ -9,7 +13,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 console.error(err);
                 sendResponse({ status: 'error', error: err.message });
             });
-        return true; // Keep channel open for async
+        return true;
     }
 });
 
