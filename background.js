@@ -1,19 +1,30 @@
-chrome.action.onClicked.addListener((tab) => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
-});
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'SYNC_CARS') {
-        processAndSaveData(message.data)
-            .then(() => {
-                chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
-                sendResponse({ status: 'success' });
-            })
-            .catch(err => {
-                console.error(err);
-                sendResponse({ status: 'error', error: err.message });
+chrome.action.onClicked.addListener(async (tab) => {
+    // If we're on the saved listings page, sync and open dashboard
+    if (tab.url && tab.url.includes("cargurus.com/Cars/myAccount/saved-listings")) {
+        try {
+            // Execute script in the page to get window.__remixContext
+            const results = await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                world: 'MAIN',
+                func: () => window.__remixContext
             });
-        return true;
+
+            if (results && results[0] && results[0].result) {
+                await processAndSaveData(results[0].result);
+                // Open dashboard
+                chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+            } else {
+                console.error("Could not find car data on the page.");
+                // Still open dashboard so they can see existing data
+                chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+            }
+        } catch (err) {
+            console.error("Failed to sync:", err);
+            chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+        }
+    } else {
+        // Just open the dashboard if we're not on the CarGurus page
+        chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
     }
 });
 
@@ -28,7 +39,7 @@ async function processAndSaveData(raw) {
         }
     }
 
-    if (listings.length === 0) throw new Error('No listings found');
+    if (listings.length === 0) return;
 
     const result = await chrome.storage.local.get(['cars']);
     let existingCars = result.cars || {};

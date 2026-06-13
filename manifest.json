@@ -1,44 +1,17 @@
 {
   "manifest_version": 3,
   "name": "CarGurus Trip Planner",
-  "version": "1.1",
-  "description": "Standalone map and trip planner for your saved CarGurus listings.",
-  "permissions": [
-    "storage",
-    "tabs"
-  ],
+  "version": "1.2",
+  "description": "Sync and visualize your saved CarGurus listings on an interactive map.",
+  "permissions": ["storage", "activeTab", "scripting"],
   "action": {},
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.cargurus.com/Cars/myAccount/saved-listings*"
-      ],
-      "js": [
-        "content_script.js"
-      ],
-      "world": "MAIN"
-    },
-    {
-      "matches": [
-        "https://www.cargurus.com/Cars/myAccount/saved-listings*"
-      ],
-      "js": [
-        "bridge.js"
-      ]
-    }
-  ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "dashboard/dashboard.html",
-        "assets/*"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["dashboard/dashboard.html", "assets/*"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
