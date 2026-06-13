@@ -13,6 +13,7 @@ const CITY_COORDS = {
 let map, markerObjects = [];
 
 async function init() {
+    L.Icon.Default.imagePath = "../assets/images/";
     map = L.map('map').setView([40.0, -75.0], 9);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 20
