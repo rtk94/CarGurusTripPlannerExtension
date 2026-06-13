@@ -15,6 +15,6 @@ A standalone browser extension to manage and visualize your saved CarGurus listi
 4. Select the `[Project Folder]` folder.
 
 ## Usage
-1. Go to your [CarGurus Saved Cars](https://www.cargurus.com/Cars/saved-listings) page.
+1. Go to your [CarGurus Saved Cars](https://www.cargurus.com/Cars/myAccount/saved-listings) page.
 2. Click **🚀 Sync to Car Map**.
 3. The dashboard will open automatically in a new tab.
