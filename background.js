@@ -34,8 +34,8 @@ async function processAndSaveData(raw) {
 
     if (listings.length === 0) return;
 
-    const result = await chrome.storage.local.get(["cars"]);
-    let existingCars = result.cars || {};
+    // We will OVERWRITE the data to ensure broken links are purged
+    let newCars = {};
 
     listings.forEach(item => {
         const id = String(item.id);
@@ -48,16 +48,10 @@ async function processAndSaveData(raw) {
             image_url = item.originalPictureData.url;
         }
 
-        let link = item.vdpUrl || "";
-        if (link && !link.startsWith("http")) {
-            link = "https://www.cargurus.com" + link;
-        }
+        // The most reliable "Short Link" format for CarGurus
+        const link = "https://www.cargurus.com/Cars/listing/" + id;
         
-        if (!link) {
-            link = "https://www.cargurus.com/Cars/forsale/viewListing.action?listingId=" + id;
-        }
-        
-        existingCars[id] = {
+        newCars[id] = {
             ID: id,
             Year: item.year || "",
             Make: item.make || "",
@@ -76,5 +70,5 @@ async function processAndSaveData(raw) {
         };
     });
 
-    await chrome.storage.local.set({ cars: existingCars });
+    await chrome.storage.local.set({ cars: newCars });
 }
