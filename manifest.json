@@ -5,7 +5,12 @@
   "description": "Sync and visualize your saved CarGurus listings on an interactive map with AutoTour.",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["*://*.cargurus.com/*"],
-  "action": {},
+  "icons": {
+    "128": "assets/icon.jpg"
+  },
+  "action": {
+    "default_icon": "assets/icon.jpg"
+  },
   "background": {
     "service_worker": "background.js"
   },
