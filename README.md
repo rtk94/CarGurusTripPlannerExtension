@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/icon.png" alt="AutoTour Icon" width="128" />
+</p>
+
 # AutoTour
 
 A powerful, 100% standalone browser extension designed to help users manage, visualize, and plan trips to see their saved CarGurus listings. 
