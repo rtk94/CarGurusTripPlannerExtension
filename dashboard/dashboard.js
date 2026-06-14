@@ -388,7 +388,7 @@ async function enrichCarData(id, btn) {
         const res = await fetch(`https://www.cargurus.com/Cars/listing/${id}`);
         const text = await res.text();
         
-        const match = text.match(/window\.__remixContext\s*=\s*(\{.*?\});/);
+        const match = text.match(/window\.__remixContext\s*=\s*(\{[\s\S]+?\});?\s*<\/script>/);
         if (match && match[1]) {
             const data = JSON.parse(match[1]);
             
