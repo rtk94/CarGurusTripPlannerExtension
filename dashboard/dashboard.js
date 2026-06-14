@@ -18,6 +18,17 @@ let currentFilters = {
     dealRating: ""
 };
 
+function formatAddress(addr) {
+    if (!addr) return "N/A";
+    // Usually formatted like "123 Main St, City, ST, Zip, US"
+    // We want to try to break it after the street
+    const parts = addr.split(",");
+    if (parts.length > 2) {
+        return parts[0].trim() + "<br>" + parts.slice(1).join(", ").trim();
+    }
+    return addr;
+}
+
 async function init() {
     L.Icon.Default.imagePath = "../assets/images/";
     map = L.map("map").setView([40.0, -75.0], 9);
@@ -40,7 +51,7 @@ async function init() {
                 <p>${car.Mileage} mi</p>
                 <div class="seller-info">
                     <p><b>${car.Seller}</b></p>
-                    <p>${car.SellerAddress || car.Location}</p>
+                    <p>${formatAddress(car.SellerAddress || car.Location)}</p>
                     <p>${car.SellerPhone || ""}</p>
                 </div>
                 <a href="${car.MapsUrl}" target="_blank" class="popup-btn">📍 Navigate</a>
@@ -142,7 +153,7 @@ function renderList() {
                 <div class="card-details">
                     <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
                     <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
-                    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${c.SellerAddress || "N/A"}</span></div>
+                    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${formatAddress(c.SellerAddress)}</span></div>
                     <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${c.SellerPhone || "N/A"}</span></div>
                     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
                     <div class="detail-row"><span class="detail-label">Market Days</span><span class="detail-value">${c.DaysOnMarket}</span></div>

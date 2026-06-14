@@ -40,22 +40,37 @@ async function processAndSaveData(raw) {
         const id = String(item.id);
         if (!id) return;
 
+        // --- IMPROVED IMAGE EXTRACTION ---
         let image_url = "";
         if (item.imageCarouselPictures && item.imageCarouselPictures.length > 0) {
             image_url = item.imageCarouselPictures[0].url;
-        } else if (item.originalPictureData) {
+        } else if (item.originalPictureData && item.originalPictureData.url) {
             image_url = item.originalPictureData.url;
+        } else if (item.mainPictureData && item.mainPictureData.url) {
+            image_url = item.mainPictureData.url;
+        } else if (item.pictureUrl) {
+            image_url = item.pictureUrl;
         }
 
         const link = "https://www.cargurus.com/Cars/listing/" + id;
         
-        // Extracting address from Maps URL if possible
+        // --- IMPROVED ADDRESS CLEANUP ---
         let address = "";
+        const sellerName = item.serviceProviderName || "";
+        
         if (item.serviceProviderMapsUrl) {
              try {
                 const url = new URL(item.serviceProviderMapsUrl);
                 const params = new URLSearchParams(url.search);
-                address = params.get("destination") || "";
+                let dest = params.get("destination") || "";
+                
+                // Remove redundant seller name from destination string
+                if (dest && sellerName && dest.toLowerCase().startsWith(sellerName.toLowerCase())) {
+                    dest = dest.substring(sellerName.length).trim();
+                    // Sometimes there is a leftover space or comma
+                    if (dest.startsWith(",") || dest.startsWith(" ")) dest = dest.substring(1).trim();
+                }
+                address = dest;
              } catch(e) {}
         }
 
@@ -68,7 +83,7 @@ async function processAndSaveData(raw) {
             Price: item.priceString || "",
             Mileage: item.mileageString || "",
             Location: item.cityRegion || "",
-            Seller: item.serviceProviderName || "",
+            Seller: sellerName,
             SellerPhone: item.serviceProviderPhone || "",
             SellerAddress: address,
             SellerRating: item.sellerRating || "N/A",
