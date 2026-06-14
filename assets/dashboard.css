@@ -1,4 +1,5 @@
-body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; color: #3c4043; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; color: #18181b; background: #f4f4f5; }
 
 /* 1. Dynamic/Responsive Sidebar Width */
 #sidebar { 
@@ -16,56 +17,69 @@ body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; di
 #map { flex-grow: 1; height: 100%; background: #e8eaed; }
 
 .header { padding: 16px 20px; background: white; border-bottom: 1px solid #dadce0; }
-.header h2 { margin: 0 0 12px 0; font-size: 18px; color: #1a73e8; display: flex; align-items: center; gap: 8px; }
+.header h2 { margin: 0 0 12px 0; font-size: 18px; color: #4f46e5; display: flex; align-items: center; gap: 8px; }
 
 .search-box { position: relative; width: 100%; }
-.search-box input { width: 100%; padding: 10px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; }
+.search-box input { width: 100%; padding: 10px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; }
+.search-box input:focus { border-color: #4f46e5; }
 
-.filter-toggle { display: inline-block; margin-top: 8px; font-size: 13px; color: #1a73e8; font-weight: 500; cursor: pointer; }
+.filter-toggle { display: inline-block; margin-top: 8px; font-size: 13px; color: #4f46e5; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.filter-toggle:hover { opacity: 0.8; }
 
 /* 2. Fixed Overhanging Elements in Filter Panel */
-#filter-panel { display: none; padding: 15px 20px; background: #fff; border-bottom: 1px solid #dadce0; box-sizing: border-box; }
+#filter-panel { display: none; padding: 15px 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #e4e4e7; box-sizing: border-box; }
 .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
 .filter-group { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
-.filter-group label { font-size: 11px; font-weight: 700; color: #70757a; text-transform: uppercase; }
-.filter-group input, .filter-group select { width: 100%; padding: 6px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+.filter-group label { font-size: 11px; font-weight: 700; color: #71717a; text-transform: uppercase; }
+.filter-group input, .filter-group select { width: 100%; padding: 6px 8px; border: 1px solid #e4e4e7; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-.filter-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #f1f3f4; }
-.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
-.btn-clear { background: #f1f3f4; color: #3c4043; }
-.btn-apply { background: #1a73e8; color: white; }
+.filter-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e4e4e7; }
+.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.btn-clear { background: #f4f4f5; color: #3f3f46; }
+.btn-apply { background: #4f46e5; color: white; }
 
-.list-controls { padding: 10px 20px; background: #fff; border-bottom: 1px solid #dadce0; display: flex; justify-content: space-between; align-items: center; }
+.list-controls { padding: 10px 20px; background: #fff; border-bottom: 1px solid #e4e4e7; display: flex; justify-content: space-between; align-items: center; }
 
-#car-list { flex-grow: 1; overflow-y: auto; padding: 12px; background: #f1f3f4; }
+#car-list { flex-grow: 1; overflow-y: auto; padding: 16px; background: #f4f4f5; }
 
 /* 3. Improved Card Layout with No Cutting Off */
-.car-card { background: white; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 2px solid transparent; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
-.car-card.active { border-color: #1a73e8; background: #f8fbff; }
+.car-card { background: white; border-radius: 16px; margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.04); width: 100%; box-sizing: border-box; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.car-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0,0,0,0.08); }
+.car-card.active { border-color: #4f46e5; background: #e0e7ff; }
 .car-card.hidden { opacity: 0.4; filter: grayscale(1); }
 
-.card-main { display: flex; padding: 12px; gap: 12px; }
-.card-thumb { width: 110px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #e8eaed; }
+.card-main { display: flex; padding: 14px; gap: 14px; }
+.card-thumb { width: 110px; height: 80px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #e4e4e7; }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-.card-info { flex-grow: 1; overflow: hidden; }
-.card-info h4 { margin: 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-info .price { font-weight: 700; color: #188038; font-size: 15px; margin: 4px 0; }
-.card-info .meta { font-size: 12px; color: #5f6368; }
+.card-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.card-info h4 { margin: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #18181b; }
+.card-info .price { font-weight: 700; color: #166534; font-size: 16px; margin: 4px 0; }
+.card-info .meta { font-size: 12px; color: #71717a; }
 
-.card-details { display: none; padding: 12px; background: #fff; border-top: 1px solid #f1f3f4; box-sizing: border-box; }
-.car-card.active .card-details { display: block; }
+.card-details { display: none; padding: 14px; background: #fff; border-top: 1px solid #e4e4e7; box-sizing: border-box; }
+.car-card.active .card-details { display: block; background: #f8fafc; }
 
-.detail-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; gap: 10px; }
-.detail-label { color: #5f6368; flex-shrink: 0; }
-.detail-value { font-weight: 500; text-align: right; overflow-wrap: break-word; }
+/* New Details Grid */
+.card-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-bottom: 12px; }
+.detail-item { display: flex; flex-direction: column; font-size: 13px; }
+.detail-item .label { color: #71717a; font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 2px; }
+.detail-item .val { font-weight: 500; color: #27272a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.val.na { color: #a1a1aa; font-style: italic; }
 
-.action-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.btn-view, .btn-nav { display: block; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; box-sizing: border-box; width: 100%; }
-.btn-view { background: #1a73e8; color: white; }
-.btn-nav { background: #fff; color: #1a73e8; border: 1px solid #1a73e8; }
+/* Action Buttons Flex */
+.card-actions-row { display: flex; gap: 8px; margin-top: 14px; }
+.btn-enrich, .btn-add-route { flex-grow: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; }
+.btn-enrich { background: #fef08a; color: #854d0e; }
+.btn-enrich:hover { background: #fde047; transform: translateY(-1px); }
+.btn-add-route { background: #e0e7ff; color: #4f46e5; }
+.btn-add-route.added { background: #dcfce7; color: #166534; }
+.btn-add-route:hover { filter: brightness(0.95); transform: translateY(-1px); }
+.icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 8px; background: #f4f4f5; color: #52525b; text-decoration: none; font-size: 16px; transition: all 0.2s ease; border: 1px solid #e4e4e7; box-sizing: border-box; }
+.icon-btn:hover { background: #e4e4e7; color: #27272a; transform: translateY(-2px); }
 
-.visibility-toggle { position: absolute; top: 12px; right: 12px; transform: scale(1.1); z-index: 5; cursor: pointer; }
+.visibility-toggle { position: absolute; top: 14px; right: 14px; transform: scale(1.2); z-index: 5; cursor: pointer; }
 
 /* Map Popups Styles */
 .car-popup { width: 200px; }
@@ -77,21 +91,18 @@ body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; di
 .car-popup .popup-btn { display: block; background: #1a73e8; color: white; text-align: center; padding: 6px; border-radius: 4px; text-decoration: none; font-size: 11px; margin-top: 8px; font-weight: 600; }
 
 /* Route Button Styles */
-.btn-add-route { background: #e8f0fe; color: #1a73e8; border: none; font-size: 12px; padding: 6px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold; }
-.btn-add-route.added { background: #188038; color: white; }
-
 #route-panel {
     display: none;
     padding: 15px 20px;
-    background: #e8f0fe;
-    border-bottom: 1px solid #dadce0;
+    background: #e0e7ff;
+    border-bottom: 1px solid #e4e4e7;
     box-sizing: border-box;
 }
 
 #route-panel h3 {
     margin: 0 0 10px 0;
     font-size: 14px;
-    color: #1a73e8;
+    color: #4f46e5;
 }
 
 #route-stops {
@@ -102,63 +113,71 @@ body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; di
 .route-stop-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     background: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    padding: 6px 10px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .route-stop-item .remove-stop {
-    color: #d93025;
+    color: #ef4444;
     cursor: pointer;
     font-weight: bold;
+    padding: 0 4px;
 }
 
 .btn-start-route {
     display: block;
     width: 100%;
-    background: #1a73e8;
+    background: #4f46e5;
     color: white;
     text-align: center;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: 8px;
     text-decoration: none;
     font-size: 13px;
     font-weight: bold;
     border: none;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
+.btn-start-route:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-/* --- DARK MODE --- */
-body.dark-mode { color: #e8eaed; }
-body.dark-mode #sidebar { background: #202124; border-right: 1px solid #3c4043; }
-body.dark-mode .header { background: #202124; border-bottom: 1px solid #3c4043; }
-body.dark-mode .header h2 { color: #8ab4f8; }
-body.dark-mode .search-box input { background: #303134; color: #e8eaed; border: 1px solid #5f6368; }
-body.dark-mode #filter-panel { background: #202124; border-bottom: 1px solid #3c4043; }
-body.dark-mode .filter-group label { color: #9aa0a6; }
-body.dark-mode .filter-group input, body.dark-mode .filter-group select { background: #303134; color: #e8eaed; border: 1px solid #5f6368; }
-body.dark-mode .filter-actions { border-top: 1px solid #3c4043; }
-body.dark-mode .btn-clear { background: #303134; color: #e8eaed; }
-body.dark-mode .list-controls { background: #202124; border-bottom: 1px solid #3c4043; color: #e8eaed; }
-body.dark-mode .list-controls label { color: #9aa0a6; }
-body.dark-mode #car-list { background: #171717; }
-body.dark-mode .car-card { background: #202124; border: 2px solid transparent; }
-body.dark-mode .car-card.active { border-color: #8ab4f8; background: #303134; }
-body.dark-mode .card-details { background: #202124; border-top: 1px solid #3c4043; }
-body.dark-mode .detail-label { color: #9aa0a6; }
-body.dark-mode .detail-value { color: #e8eaed; }
-body.dark-mode .btn-nav { background: #202124; color: #8ab4f8; border: 1px solid #8ab4f8; }
-body.dark-mode .car-popup { color: #e8eaed; }
-body.dark-mode .leaflet-popup-content-wrapper, body.dark-mode .leaflet-popup-tip { background: #202124; color: #e8eaed; }
-body.dark-mode .car-popup p { color: #9aa0a6; }
-body.dark-mode .car-popup .seller-info { border-top: 1px solid #3c4043; }
-body.dark-mode #route-panel { background: #303134; border-bottom: 1px solid #3c4043; }
-body.dark-mode #route-panel h3 { color: #8ab4f8; }
-body.dark-mode .route-stop-item { background: #202124; color: #e8eaed; }
-body.dark-mode .btn-add-route { background: #303134; color: #8ab4f8; }
-body.dark-mode .btn-add-route.added { background: #81c995; color: #202124; }
-body.dark-mode .btn-csv { background: #303134; color: #e8eaed; border: 1px solid #5f6368; padding: 4px 8px; border-radius: 4px; cursor: pointer;}
-.btn-enrich { background: #fbbc04; color: #202124; border: none; font-size: 12px; padding: 6px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold; width: 100%; box-sizing: border-box; }
-body.dark-mode .btn-enrich { background: #fbbc04; color: #202124; }
+/* --- DARK MODE OVERRIDES --- */
+body.dark-mode { color: #e4e4e7; background: #09090b; }
+body.dark-mode #sidebar { background: #18181b; border-right: 1px solid #27272a; }
+body.dark-mode .header { background: #18181b; border-bottom: 1px solid #27272a; }
+body.dark-mode .header h2 { color: #818cf8; }
+body.dark-mode .search-box input { background: #27272a; color: #e4e4e7; border: 1px solid #3f3f46; }
+body.dark-mode #filter-panel { background: rgba(24, 24, 27, 0.95); border-bottom: 1px solid #27272a; }
+body.dark-mode .filter-group label { color: #a1a1aa; }
+body.dark-mode .filter-group input, body.dark-mode .filter-group select { background: #27272a; color: #e4e4e7; border: 1px solid #3f3f46; }
+body.dark-mode .filter-actions { border-top: 1px solid #27272a; }
+body.dark-mode .btn-clear { background: #27272a; color: #e4e4e7; }
+body.dark-mode .list-controls { background: #18181b; border-bottom: 1px solid #27272a; color: #e4e4e7; }
+body.dark-mode .list-controls label { color: #a1a1aa; }
+body.dark-mode #car-list { background: #09090b; }
+body.dark-mode .car-card { background: #18181b; border: 2px solid transparent; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+body.dark-mode .car-card.active { border-color: #818cf8; background: #27272a; }
+body.dark-mode .card-info h4 { color: #f4f4f5; }
+body.dark-mode .card-details { background: #18181b; border-top: 1px solid #27272a; }
+body.dark-mode .car-card.active .card-details { background: #18181b; }
+body.dark-mode .detail-item .label { color: #a1a1aa; }
+body.dark-mode .detail-item .val { color: #e4e4e7; }
+body.dark-mode .val.na { color: #52525b; }
+body.dark-mode .icon-btn { background: #27272a; border-color: #3f3f46; color: #a1a1aa; }
+body.dark-mode .icon-btn:hover { background: #3f3f46; color: #f4f4f5; }
+body.dark-mode .btn-enrich { background: #854d0e; color: #fef08a; }
+body.dark-mode .btn-add-route { background: #3730a3; color: #e0e7ff; }
+body.dark-mode .btn-add-route.added { background: #166534; color: #dcfce7; }
+body.dark-mode .history-row { border-color: #27272a !important; }
+body.dark-mode .car-popup { color: #e4e4e7; }
+body.dark-mode .leaflet-popup-content-wrapper, body.dark-mode .leaflet-popup-tip { background: #18181b; color: #e4e4e7; }
+body.dark-mode .car-popup p { color: #a1a1aa; }
+body.dark-mode .car-popup .seller-info { border-top: 1px solid #27272a; }
+body.dark-mode #route-panel { background: #1e1b4b; border-bottom: 1px solid #3730a3; }
+body.dark-mode #route-panel h3 { color: #818cf8; }
+body.dark-mode .route-stop-item { background: #18181b; color: #e4e4e7; border: 1px solid #27272a; }
+body.dark-mode .btn-csv { background: #27272a; color: #e4e4e7; border: 1px solid #3f3f46; padding: 4px 8px; border-radius: 4px; cursor: pointer;}
+

@@ -208,34 +208,32 @@ function renderList() {
                     </div>
                     <div class="card-info">
                         <h4>${c.Year} ${c.Make} ${c.Model}</h4>
-                        <div class="price">${c.Price} <span style="font-size:11px; font-weight:bold; color:white; background:${dealColor}; padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;">${dealText}</span></div>
+                        <div class="price">${c.Price} <span style="font-size:10px; font-weight:bold; color:white; background:${dealColor}; padding:2px 6px; border-radius:12px; margin-left:6px; vertical-align:middle;">${dealText}</span></div>
                         <div class="meta">${c.Mileage} mi • ${c.Location}</div>
                     </div>
                 </div>
                 <div class="card-details">
-                    <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
-                    <div class="detail-row"><span class="detail-label">Transmission</span><span class="detail-value">${c.Transmission || "N/A"}</span></div>
-                    <div class="detail-row"><span class="detail-label">MPG</span><span class="detail-value">${c.GasMileage || "N/A"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
-                    <div class="detail-row"><span class="detail-label">Rating</span><span class="detail-value" style="color:#fbbc04;">★ ${c.SellerRating || "N/A"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${formatAddress(c.SellerAddress)}</span></div>
-                    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${formatPhone(c.SellerPhone)}</span></div>
-                    <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
-                    <div class="detail-row"><span class="detail-label">Market Days</span><span class="detail-value">${c.DaysOnMarket}</span></div>
-                    <div class="detail-row" style="border-top:1px solid #eee; margin-top:6px; padding-top:6px;">
-                        <span class="detail-label">History</span>
-                        <span class="detail-value" style="font-size:11px;">
-                            Title: ${c.TitleStatus || "N/A"}<br>
-                            Accidents: ${c.Accidents || "N/A"}<br>
-                            Owners: ${c.Owners || "N/A"}
-                        </span>
+                    <div class="card-details-grid">
+                        <div class="detail-item"><span class="label">Trim</span><span class="val ${!c.Trim ? 'na' : ''}">${c.Trim || 'N/A'}</span></div>
+                        <div class="detail-item"><span class="label">Transmission</span><span class="val ${(!c.Transmission || c.Transmission === 'N/A') ? 'na' : ''}">${c.Transmission || "N/A"}</span></div>
+                        <div class="detail-item"><span class="label">MPG</span><span class="val ${(!c.GasMileage || c.GasMileage === 'N/A') ? 'na' : ''}">${c.GasMileage || "N/A"}</span></div>
+                        <div class="detail-item"><span class="label">Distance</span><span class="val">${c.Distance} mi</span></div>
+                        <div class="detail-item"><span class="label">Market Days</span><span class="val">${c.DaysOnMarket}</span></div>
+                        <div class="detail-item"><span class="label">Address</span><span class="val">${formatAddress(c.SellerAddress)}</span></div>
+                        <div class="detail-item"><span class="label">Seller</span><span class="val">${c.Seller}</span></div>
+                        <div class="detail-item"><span class="label">Rating</span><span class="val ${(!c.SellerRating || c.SellerRating === 'N/A') ? 'na' : ''}" style="${c.SellerRating !== 'N/A' ? 'color:#f59e0b;' : ''}">${c.SellerRating !== 'N/A' ? '★ ' + c.SellerRating : 'N/A'}</span></div>
+                    </div>
+                    <div style="border-top:1px solid #e4e4e7; margin-top:8px; padding-top:8px; display:flex; gap:12px;" class="history-row">
+                        <div class="detail-item"><span class="label">Title</span><span class="val ${(!c.TitleStatus || c.TitleStatus === 'N/A') ? 'na' : ''}">${c.TitleStatus || "N/A"}</span></div>
+                        <div class="detail-item"><span class="label">Accidents</span><span class="val ${(!c.Accidents || c.Accidents === 'N/A') ? 'na' : ''}">${c.Accidents || "N/A"}</span></div>
+                        <div class="detail-item"><span class="label">Owners</span><span class="val ${(!c.Owners || c.Owners === 'N/A') ? 'na' : ''}">${c.Owners || "N/A"}</span></div>
                     </div>
                     
-                    <div class="action-buttons">
-                        <button class="btn-enrich" data-id="${c.ID}">⚡ Enrich Data</button>
-                        <button class="btn-add-route ${isRouted ? 'added' : ''}" data-id="${c.ID}">${isRouted ? '✓ Added to Route' : '➕ Add to Route'}</button>
-                        <a href="${c.MapsUrl}" class="btn-nav" target="_blank">📍 Open Navigation</a>
-                        <a href="${c.Link}" class="btn-view" target="_blank">🔗 View on CarGurus</a>
+                    <div class="card-actions-row">
+                        <button class="btn-enrich" data-id="${c.ID}">⚡ Enrich</button>
+                        <button class="btn-add-route ${isRouted ? 'added' : ''}" data-id="${c.ID}">${isRouted ? '✓ Added' : '➕ Route'}</button>
+                        <a href="${c.MapsUrl}" class="icon-btn" target="_blank" title="Open Navigation">📍</a>
+                        <a href="${c.Link}" class="icon-btn" target="_blank" title="View on CarGurus">🔗</a>
                     </div>
                 </div>
             `;
