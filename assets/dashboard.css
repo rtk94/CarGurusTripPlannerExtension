@@ -93,9 +93,17 @@ body { margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; displ
 /* Route Button Styles */
 #route-panel {
     display: none;
-    padding: 15px 20px;
-    background: #e0e7ff;
-    border-bottom: 1px solid #e4e4e7;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 320px;
+    z-index: 2000;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     box-sizing: border-box;
 }
 
@@ -176,7 +184,7 @@ body.dark-mode .car-popup { color: #e4e4e7; }
 body.dark-mode .leaflet-popup-content-wrapper, body.dark-mode .leaflet-popup-tip { background: #18181b; color: #e4e4e7; }
 body.dark-mode .car-popup p { color: #a1a1aa; }
 body.dark-mode .car-popup .seller-info { border-top: 1px solid #27272a; }
-body.dark-mode #route-panel { background: #1e1b4b; border-bottom: 1px solid #3730a3; }
+body.dark-mode #route-panel { background: rgba(24, 24, 27, 0.92); border: 1px solid #3f3f46; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 body.dark-mode #route-panel h3 { color: #818cf8; }
 body.dark-mode .route-stop-item { background: #18181b; color: #e4e4e7; border: 1px solid #27272a; }
 body.dark-mode .btn-csv { background: #27272a; color: #e4e4e7; border: 1px solid #3f3f46; padding: 4px 8px; border-radius: 4px; cursor: pointer;}
