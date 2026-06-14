@@ -34,7 +34,6 @@ async function processAndSaveData(raw) {
 
     if (listings.length === 0) return;
 
-    // We will OVERWRITE the data to ensure broken links are purged
     let newCars = {};
 
     listings.forEach(item => {
@@ -48,9 +47,18 @@ async function processAndSaveData(raw) {
             image_url = item.originalPictureData.url;
         }
 
-        // The most reliable "Short Link" format for CarGurus
         const link = "https://www.cargurus.com/Cars/listing/" + id;
         
+        // Extracting address from Maps URL if possible
+        let address = "";
+        if (item.serviceProviderMapsUrl) {
+             try {
+                const url = new URL(item.serviceProviderMapsUrl);
+                const params = new URLSearchParams(url.search);
+                address = params.get("destination") || "";
+             } catch(e) {}
+        }
+
         newCars[id] = {
             ID: id,
             Year: item.year || "",
@@ -61,6 +69,10 @@ async function processAndSaveData(raw) {
             Mileage: item.mileageString || "",
             Location: item.cityRegion || "",
             Seller: item.serviceProviderName || "",
+            SellerPhone: item.serviceProviderPhone || "",
+            SellerAddress: address,
+            SellerRating: item.sellerRating || "N/A",
+            MapsUrl: item.serviceProviderMapsUrl || "",
             Distance: item.distance ? Math.round(item.distance * 10) / 10 : "",
             ImageURL: image_url,
             Link: link,

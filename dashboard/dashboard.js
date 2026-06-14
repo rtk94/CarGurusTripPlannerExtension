@@ -34,14 +34,22 @@ async function init() {
         
         const popupContent = `
             <div class="car-popup">
+                <img src="${c.ImageURL || "https://via.placeholder.com/200x150?text=No+Image"}">
                 <h3>${car.Year} ${car.Make} ${car.Model}</h3>
                 <p class="price">${car.Price}</p>
                 <p>${car.Mileage} mi</p>
-            </div>`;
+                <div class="seller-info">
+                    <p><b>${car.Seller}</b></p>
+                    <p>${car.SellerAddress || car.Location}</p>
+                    <p>${car.SellerPhone || ""}</p>
+                </div>
+                <a href="${car.MapsUrl}" target="_blank" class="popup-btn">📍 Navigate</a>
+                <a href="${car.Link}" target="_blank" class="popup-btn">🔗 View Listing</a>
+            </div>`.replace("c.ImageURL", car.ImageURL); // Fixing template error
         
         const marker = L.marker(jittered).addTo(map).bindPopup(popupContent);
         marker.on("click", () => {
-            const card = document.getElementById(`card-${car.ID}`);
+            const card = document.getElementById("card-" + car.ID);
             if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
             setActive(car.ID);
         });
@@ -116,7 +124,7 @@ function renderList() {
 
         if (matchesText && matchesFilters) {
             const card = document.createElement("div");
-            card.id = `card-${c.ID}`;
+            card.id = "card-" + c.ID;
             card.className = "car-card" + (obj.visible ? "" : " hidden") + (activeId === c.ID ? " active" : "");
             
             card.innerHTML = `
@@ -134,11 +142,16 @@ function renderList() {
                 <div class="card-details">
                     <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
                     <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
+                    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${c.SellerAddress || "N/A"}</span></div>
+                    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${c.SellerPhone || "N/A"}</span></div>
                     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
-                    <div class="detail-row"><span class="detail-label">Saved On</span><span class="detail-value">${c.SavedDate}</span></div>
                     <div class="detail-row"><span class="detail-label">Market Days</span><span class="detail-value">${c.DaysOnMarket}</span></div>
                     <div class="detail-row"><span class="detail-label">Deal Rating</span><span class="detail-value">${(c.DealRating || "NA").replace("_", " ")}</span></div>
-                    <a href="${c.Link}" class="btn-view" target="_blank">View on CarGurus</a>
+                    
+                    <div class="action-buttons">
+                        <a href="${c.MapsUrl}" class="btn-nav" target="_blank">📍 Open Navigation</a>
+                        <a href="${c.Link}" class="btn-view" target="_blank">🔗 View on CarGurus</a>
+                    </div>
                 </div>
             `;
             
@@ -177,7 +190,7 @@ function setActive(id) {
     activeId = id;
     const cards = document.querySelectorAll(".car-card");
     cards.forEach(c => c.classList.remove("active"));
-    const activeCard = document.getElementById(`card-${id}`);
+    const activeCard = document.getElementById("card-" + id);
     if (activeCard) activeCard.classList.add("active");
 }
 
