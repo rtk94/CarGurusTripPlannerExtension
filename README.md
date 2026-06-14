@@ -1,4 +1,4 @@
-# CarGurus Trip Planner Extension
+# AutoTour
 
 A powerful, 100% standalone browser extension designed to help users manage, visualize, and plan trips to see their saved CarGurus listings. 
 
@@ -42,7 +42,7 @@ As this is a standalone tool, you can load it directly into any Chromium-based b
 3.  Enable **Developer mode** using the toggle in the top-right corner.
 4.  Click the **Load unpacked** button.
 5.  Select the `CarGurusExtension` folder.
-6.  **Tip:** Click the "Puzzle Piece" icon in your toolbar and **Pin** the CarGurus Trip Planner for easy access.
+6.  **Tip:** Click the "Puzzle Piece" icon in your toolbar and **Pin** AutoTour for easy access.
 
 ## 📖 Usage Instructions
 
