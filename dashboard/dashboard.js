@@ -50,6 +50,10 @@ async function init() {
 
     const result = await chrome.storage.local.get(["cars"]);
     const cars = Object.values(result.cars || {}).sort((a, b) => b.Year - a.Year);
+    
+    if (cars.length > 0 && cars[0].rawPayload) {
+        console.log("DEBUG: RAW CARGURUS PAYLOAD:", cars[0].rawPayload);
+    }
 
     cars.forEach((car) => {
         // Geocode using US_CITIES from assets/cities.js
@@ -75,8 +79,8 @@ async function init() {
             <div class="car-popup">
                 <img src="${car.ImageURL || "https://via.placeholder.com/200x150?text=No+Image"}">
                 <h3>${car.Year} ${car.Make} ${car.Model}</h3>
-                <p class="price">${car.Price}</p>
-                <p>${car.Mileage} mi</p>
+                <p class="price">${car.Price} <span style="font-size:11px; font-weight:bold; color:white; background:${getDealColor(car.DealRating)}; padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;">${formatDealRating(car.DealRating)}</span></p>
+                <p>${car.Mileage} mi • ${car.GasMileage || "N/A"}</p>
                 <div class="seller-info">
                     <p><b>${car.Seller}</b> <span style="color:#fbbc04;">★ ${car.SellerRating || "N/A"}</span></p>
                     <p>${formatAddress(car.SellerAddress || car.Location)}</p>
@@ -149,6 +153,21 @@ function clearFilters() {
     renderList();
 }
 
+function formatDealRating(deal) {
+    if (!deal || deal === "NA") return "N/A";
+    return deal.replace("_PRICE", "").replace("_", " ");
+}
+
+function getDealColor(deal) {
+    switch(deal) {
+        case "GREAT_PRICE": return "#188038"; // Green
+        case "GOOD_PRICE": return "#1e8e3e"; // Light Green
+        case "FAIR_PRICE": return "#f29900"; // Orange
+        case "HIGH_PRICE": return "#d93025"; // Red
+        default: return "#5f6368"; // Gray
+    }
+}
+
 function parseNumeric(str) {
     if (!str) return 0;
     return parseInt(str.replace(/[^0-9]/g, "")) || 0;
@@ -175,6 +194,8 @@ function renderList() {
 
         if (matchesText && matchesFilters) {
             const isRouted = routeStops.some(s => s.id === c.ID);
+            const dealText = formatDealRating(c.DealRating);
+            const dealColor = getDealColor(c.DealRating);
             const card = document.createElement("div");
             card.id = "card-" + c.ID;
             card.className = "car-card" + (obj.visible ? "" : " hidden") + (activeId === c.ID ? " active" : "");
@@ -187,27 +208,42 @@ function renderList() {
                     </div>
                     <div class="card-info">
                         <h4>${c.Year} ${c.Make} ${c.Model}</h4>
-                        <div class="price">${c.Price}</div>
+                        <div class="price">${c.Price} <span style="font-size:11px; font-weight:bold; color:white; background:${dealColor}; padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;">${dealText}</span></div>
                         <div class="meta">${c.Mileage} mi • ${c.Location}</div>
                     </div>
                 </div>
                 <div class="card-details">
                     <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
+                    <div class="detail-row"><span class="detail-label">Transmission</span><span class="detail-value">${c.Transmission || "N/A"}</span></div>
+                    <div class="detail-row"><span class="detail-label">MPG</span><span class="detail-value">${c.GasMileage || "N/A"}</span></div>
                     <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
                     <div class="detail-row"><span class="detail-label">Rating</span><span class="detail-value" style="color:#fbbc04;">★ ${c.SellerRating || "N/A"}</span></div>
                     <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${formatAddress(c.SellerAddress)}</span></div>
                     <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${formatPhone(c.SellerPhone)}</span></div>
                     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
                     <div class="detail-row"><span class="detail-label">Market Days</span><span class="detail-value">${c.DaysOnMarket}</span></div>
-                    <div class="detail-row"><span class="detail-label">Deal Rating</span><span class="detail-value">${(c.DealRating || "NA").replace("_", " ")}</span></div>
+                    <div class="detail-row" style="border-top:1px solid #eee; margin-top:6px; padding-top:6px;">
+                        <span class="detail-label">History</span>
+                        <span class="detail-value" style="font-size:11px;">
+                            Title: ${c.TitleStatus || "N/A"}<br>
+                            Accidents: ${c.Accidents || "N/A"}<br>
+                            Owners: ${c.Owners || "N/A"}
+                        </span>
+                    </div>
                     
                     <div class="action-buttons">
+                        <button class="btn-enrich" data-id="${c.ID}">⚡ Enrich Data</button>
                         <button class="btn-add-route ${isRouted ? 'added' : ''}" data-id="${c.ID}">${isRouted ? '✓ Added to Route' : '➕ Add to Route'}</button>
                         <a href="${c.MapsUrl}" class="btn-nav" target="_blank">📍 Open Navigation</a>
                         <a href="${c.Link}" class="btn-view" target="_blank">🔗 View on CarGurus</a>
                     </div>
                 </div>
             `;
+            
+            card.querySelector(".btn-enrich").onclick = (e) => {
+                e.stopPropagation();
+                enrichCarData(c.ID, e.target);
+            };
             
             card.querySelector(".visibility-toggle").onclick = (e) => {
                 e.stopPropagation();
@@ -332,6 +368,68 @@ function exportCSV() {
     a.href = url;
     a.download = "cars_export.csv";
     a.click();
+}
+
+function findNestedKey(obj, key) {
+    if (typeof obj !== 'object' || obj === null) return undefined;
+    if (key in obj) return obj[key];
+    for (let k in obj) {
+        const result = findNestedKey(obj[k], key);
+        if (result !== undefined) return result;
+    }
+    return undefined;
+}
+
+async function enrichCarData(id, btn) {
+    btn.innerText = "⏳ Loading...";
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch(`https://www.cargurus.com/Cars/listing/${id}`);
+        const text = await res.text();
+        
+        const match = text.match(/window\.__remixContext\s*=\s*(\{.*?\});/);
+        if (match && match[1]) {
+            const data = JSON.parse(match[1]);
+            
+            const transmission = findNestedKey(data, "transmission") || findNestedKey(data, "transmissionType") || "N/A";
+            const combinedMpg = findNestedKey(data, "combinedMpg");
+            const cityMpg = findNestedKey(data, "cityMpg");
+            const highwayMpg = findNestedKey(data, "highwayMpg");
+            const mpg = combinedMpg ? combinedMpg : (cityMpg ? `${cityMpg} City / ${highwayMpg} Hwy` : "N/A");
+            
+            const sellerRating = findNestedKey(data, "sellerRating") || findNestedKey(data, "serviceProviderRating") || findNestedKey(data, "rating") || "N/A";
+            const titleStatus = findNestedKey(data, "titleStatus") || "N/A";
+            const accidents = findNestedKey(data, "accidentCount") || findNestedKey(data, "accidentsReported") || "0";
+            const owners = findNestedKey(data, "ownerCount") || findNestedKey(data, "owners") || "N/A";
+
+            const storage = await chrome.storage.local.get(["cars"]);
+            if (storage.cars && storage.cars[id]) {
+                storage.cars[id].Transmission = transmission;
+                storage.cars[id].GasMileage = mpg;
+                storage.cars[id].SellerRating = sellerRating;
+                storage.cars[id].TitleStatus = titleStatus;
+                storage.cars[id].Accidents = accidents;
+                storage.cars[id].Owners = owners;
+                
+                await chrome.storage.local.set({ cars: storage.cars });
+                
+                const obj = markerObjects.find(o => o.car.ID == id);
+                if (obj) obj.car = storage.cars[id];
+                
+                renderList();
+            }
+        } else {
+            alert("Could not extract data from the listing page.");
+            btn.innerText = "⚡ Enrich Data";
+            btn.disabled = false;
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Failed to fetch data.");
+        btn.innerText = "⚡ Enrich Data";
+        btn.disabled = false;
+    }
 }
 
 init();

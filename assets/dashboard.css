@@ -160,3 +160,5 @@ body.dark-mode .route-stop-item { background: #202124; color: #e8eaed; }
 body.dark-mode .btn-add-route { background: #303134; color: #8ab4f8; }
 body.dark-mode .btn-add-route.added { background: #81c995; color: #202124; }
 body.dark-mode .btn-csv { background: #303134; color: #e8eaed; border: 1px solid #5f6368; padding: 4px 8px; border-radius: 4px; cursor: pointer;}
+.btn-enrich { background: #fbbc04; color: #202124; border: none; font-size: 12px; padding: 6px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold; width: 100%; box-sizing: border-box; }
+body.dark-mode .btn-enrich { background: #fbbc04; color: #202124; }

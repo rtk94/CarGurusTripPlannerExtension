@@ -164,7 +164,8 @@ async function processAndSaveData(raw) {
             Transmission: item.transmission || item.transmissionType || "N/A",
             TitleStatus: item.titleStatus || item.title || (item.vehicleHistory && (item.vehicleHistory.titleStatus || item.vehicleHistory.title)) || (item.history && (item.history.titleStatus || item.history.title)) || item.condition || "N/A",
             Accidents: item.accidents || item.accidentCount || item.accidentsCount || item.accidentsReported || (item.vehicleHistory && (item.vehicleHistory.accidentCount || item.vehicleHistory.accidents)) || (item.history && (item.history.accidentCount || item.history.accidents)) || "0",
-            Owners: item.owners || item.ownerCount || item.previousOwners || (item.vehicleHistory && (item.vehicleHistory.ownerCount || item.vehicleHistory.owners)) || (item.history && (item.history.ownerCount || item.history.owners)) || "N/A"
+            Owners: item.owners || item.ownerCount || item.previousOwners || (item.vehicleHistory && (item.vehicleHistory.ownerCount || item.vehicleHistory.owners)) || (item.history && (item.history.ownerCount || item.history.owners)) || "N/A",
+            rawPayload: item
         };
     });
 

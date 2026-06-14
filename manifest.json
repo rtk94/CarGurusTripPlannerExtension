@@ -4,6 +4,7 @@
   "version": "1.2",
   "description": "Sync and visualize your saved CarGurus listings on an interactive map.",
   "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["*://*.cargurus.com/*"],
   "action": {},
   "background": {
     "service_worker": "background.js"
