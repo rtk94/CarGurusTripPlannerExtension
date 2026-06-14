@@ -6,10 +6,10 @@
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["*://*.cargurus.com/*"],
   "icons": {
-    "128": "assets/icon.jpg"
+    "128": "assets/icon.png"
   },
   "action": {
-    "default_icon": "assets/icon.jpg"
+    "default_icon": "assets/icon.png"
   },
   "background": {
     "service_worker": "background.js"
