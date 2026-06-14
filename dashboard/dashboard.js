@@ -1,16 +1,6 @@
-const CITY_COORDS = {
-    "Jackson, NJ": [40.0984, -74.3485], "Franklinville, NJ": [39.6165, -75.0760], "Bordentown, NJ": [40.1446, -74.7065],
-    "Riverside, NJ": [40.0384, -74.9577], "Quakertown, PA": [40.4409, -75.3413], "Norristown, PA": [40.1215, -75.3399],
-    "Pottstown, PA": [40.2454, -75.6496], "Bridgeton, NJ": [39.4273, -75.2341], "Sicklerville, NJ": [39.7212, -75.0007],
-    "Wilmington, DE": [39.7447, -75.5484], "Lindenwold, NJ": [39.8243, -74.9913], "Pennsauken, NJ": [39.9537, -75.0538],
-    "Maple Shade, NJ": [39.9454, -74.9963], "Burlington, NJ": [40.0712, -74.8649], "Woodbury, NJ": [39.8382, -75.1527],
-    "Voorhees, NJ": [39.8512, -74.9654], "Mount Laurel, NJ": [39.9340, -74.8910], "Jenkintown, PA": [40.0957, -75.1235],
-    "Bethlehem, PA": [40.6259, -75.3705], "Philadelphia, PA": [39.9526, -75.1652], "Lambertville, NJ": [40.3659, -74.9429],
-    "Cherry Hill, NJ": [39.9348, -75.0307], "Marlton, NJ": [39.8912, -74.9182], "Blackwood, NJ": [39.8001, -75.0607],
-    "Vineland, NJ": [39.4862, -75.0257], "Conshohocken, PA": [40.0793, -75.3016], "Sharon Hill, PA": [39.9048, -75.2671]
-};
-
 let map, markerObjects = [], activeId = null;
+let routeStops = [];
+let darkLayer, lightLayer, currentLayer;
 let currentFilters = {
     minPrice: 0, maxPrice: 999999,
     maxMiles: 999999,
@@ -39,16 +29,46 @@ function formatPhone(phone) {
 
 async function init() {
     L.Icon.Default.imagePath = "../assets/images/";
-    map = L.map("map").setView([40.0, -75.0], 9);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    map = L.map("map").setView([39.8283, -98.5795], 4); // Center of US
+    
+    lightLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         attribution: "&copy; CARTO", subdomains: "abcd", maxZoom: 20
-    }).addTo(map);
+    });
+    darkLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; CARTO", subdomains: "abcd", maxZoom: 20
+    });
+    
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("theme-toggle").innerText = "☀️";
+        currentLayer = darkLayer;
+    } else {
+        currentLayer = lightLayer;
+    }
+    currentLayer.addTo(map);
 
     const result = await chrome.storage.local.get(["cars"]);
     const cars = Object.values(result.cars || {}).sort((a, b) => b.Year - a.Year);
 
     cars.forEach((car) => {
-        const coords = CITY_COORDS[car.Location] || [39.95, -75.16];
+        // Geocode using US_CITIES from assets/cities.js
+        let coords = [39.95, -75.16]; // Fallback
+        if (typeof US_CITIES !== 'undefined') {
+            const locKey = car.Location ? car.Location.replace(", ", ",") : "";
+            const directMatch = US_CITIES[locKey];
+            if (directMatch) {
+                coords = directMatch;
+            } else if (car.Location && US_CITIES[car.Location]) {
+                coords = US_CITIES[car.Location];
+            } else {
+                // Try just the city name as fallback
+                const cityOnly = car.Location ? car.Location.split(",")[0] : "";
+                const possibleKey = Object.keys(US_CITIES).find(k => k.startsWith(cityOnly + ","));
+                if (possibleKey) coords = US_CITIES[possibleKey];
+            }
+        }
+        
         const jittered = [coords[0] + (Math.random()-0.5)*0.015, coords[1] + (Math.random()-0.5)*0.015];
         
         const popupContent = `
@@ -58,7 +78,7 @@ async function init() {
                 <p class="price">${car.Price}</p>
                 <p>${car.Mileage} mi</p>
                 <div class="seller-info">
-                    <p><b>${car.Seller}</b></p>
+                    <p><b>${car.Seller}</b> <span style="color:#fbbc04;">★ ${car.SellerRating || "N/A"}</span></p>
                     <p>${formatAddress(car.SellerAddress || car.Location)}</p>
                     <p>${formatPhone(car.SellerPhone)}</p>
                 </div>
@@ -83,6 +103,18 @@ async function init() {
     document.getElementById("btn-filter-apply").addEventListener("click", applyFilters);
     document.getElementById("btn-filter-clear").addEventListener("click", clearFilters);
     document.getElementById("export-csv").addEventListener("click", exportCSV);
+    document.getElementById("btn-start-route").addEventListener("click", startRoute);
+    document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    document.getElementById("theme-toggle").innerText = isDark ? "☀️" : "🌙";
+    
+    map.removeLayer(currentLayer);
+    currentLayer = isDark ? darkLayer : lightLayer;
+    currentLayer.addTo(map);
 }
 
 function toggleFilterPanel() {
@@ -142,6 +174,7 @@ function renderList() {
                                (currentFilters.dealRating === "" || c.DealRating === currentFilters.dealRating);
 
         if (matchesText && matchesFilters) {
+            const isRouted = routeStops.some(s => s.id === c.ID);
             const card = document.createElement("div");
             card.id = "card-" + c.ID;
             card.className = "car-card" + (obj.visible ? "" : " hidden") + (activeId === c.ID ? " active" : "");
@@ -161,6 +194,7 @@ function renderList() {
                 <div class="card-details">
                     <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
                     <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
+                    <div class="detail-row"><span class="detail-label">Rating</span><span class="detail-value" style="color:#fbbc04;">★ ${c.SellerRating || "N/A"}</span></div>
                     <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${formatAddress(c.SellerAddress)}</span></div>
                     <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${formatPhone(c.SellerPhone)}</span></div>
                     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
@@ -168,6 +202,7 @@ function renderList() {
                     <div class="detail-row"><span class="detail-label">Deal Rating</span><span class="detail-value">${(c.DealRating || "NA").replace("_", " ")}</span></div>
                     
                     <div class="action-buttons">
+                        <button class="btn-add-route ${isRouted ? 'added' : ''}" data-id="${c.ID}">${isRouted ? '✓ Added to Route' : '➕ Add to Route'}</button>
                         <a href="${c.MapsUrl}" class="btn-nav" target="_blank">📍 Open Navigation</a>
                         <a href="${c.Link}" class="btn-view" target="_blank">🔗 View on CarGurus</a>
                     </div>
@@ -178,6 +213,11 @@ function renderList() {
                 e.stopPropagation();
                 obj.visible = e.target.checked;
                 renderList();
+            };
+
+            card.querySelector(".btn-add-route").onclick = (e) => {
+                e.stopPropagation();
+                toggleRouteStop(c);
             };
             
             card.onclick = () => {
@@ -211,6 +251,74 @@ function setActive(id) {
     cards.forEach(c => c.classList.remove("active"));
     const activeCard = document.getElementById("card-" + id);
     if (activeCard) activeCard.classList.add("active");
+}
+
+function toggleRouteStop(car) {
+    const idx = routeStops.findIndex(s => s.id === car.ID);
+    if (idx >= 0) {
+        routeStops.splice(idx, 1);
+    } else {
+        routeStops.push({
+            id: car.ID,
+            title: `${car.Year} ${car.Make} ${car.Model}`,
+            address: car.SellerAddress || car.Location
+        });
+    }
+    updateRoutePanel();
+    renderList(); // re-render to update button state
+}
+
+function removeRouteStop(id) {
+    routeStops = routeStops.filter(s => s.id !== id);
+    updateRoutePanel();
+    renderList();
+}
+
+function updateRoutePanel() {
+    const container = document.getElementById("route-stops");
+    const startBtn = document.getElementById("btn-start-route");
+    
+    if (routeStops.length === 0) {
+        container.innerHTML = "No stops added yet. Click 'Add to Route' on a car.";
+        startBtn.style.display = "none";
+        return;
+    }
+    
+    container.innerHTML = "";
+    routeStops.forEach((stop, index) => {
+        const div = document.createElement("div");
+        div.className = "route-stop-item";
+        
+        const textSpan = document.createElement("span");
+        textSpan.innerHTML = `<b>${index + 1}.</b> ${stop.title}`;
+        
+        const removeSpan = document.createElement("span");
+        removeSpan.className = "remove-stop";
+        removeSpan.innerText = "✕";
+        
+        // Attach listener via JS to comply with Chrome Extension CSP
+        removeSpan.addEventListener("click", () => {
+            removeRouteStop(stop.id);
+        });
+        
+        div.appendChild(textSpan);
+        div.appendChild(removeSpan);
+        container.appendChild(div);
+    });
+    
+    startBtn.style.display = "block";
+}
+
+// Make removeRouteStop global so inline onclick works
+window.removeRouteStop = removeRouteStop;
+
+function startRoute() {
+    if (routeStops.length === 0) return;
+    
+    // Google Maps multi-stop URL
+    const baseUrl = "https://www.google.com/maps/dir/Current+Location/";
+    const stops = routeStops.map(s => encodeURIComponent(s.address)).join("/");
+    window.open(baseUrl + stops, "_blank");
 }
 
 function exportCSV() {

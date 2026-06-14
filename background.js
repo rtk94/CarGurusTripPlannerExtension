@@ -1,6 +1,43 @@
+function showToast(message, type = "info") {
+    let toast = document.getElementById("cg-trip-planner-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "cg-trip-planner-toast";
+        toast.style.position = "fixed";
+        toast.style.bottom = "20px";
+        toast.style.right = "20px";
+        toast.style.padding = "12px 20px";
+        toast.style.borderRadius = "8px";
+        toast.style.color = "#fff";
+        toast.style.fontFamily = "sans-serif";
+        toast.style.fontSize = "14px";
+        toast.style.zIndex = "999999";
+        toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+        toast.style.transition = "opacity 0.3s";
+        document.body.appendChild(toast);
+    }
+    
+    if (type === "info") toast.style.backgroundColor = "#1a73e8";
+    if (type === "error") toast.style.backgroundColor = "#d93025";
+    if (type === "success") toast.style.backgroundColor = "#188038";
+    
+    toast.innerText = message;
+    toast.style.opacity = "1";
+    
+    if (type !== "info") {
+        setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+    }
+}
+
 chrome.action.onClicked.addListener(async (tab) => {
     if (tab.url && tab.url.includes("cargurus.com/Cars/myAccount/saved-listings")) {
         try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: showToast,
+                args: ["Syncing your saved cars...", "info"]
+            });
+
             const results = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 world: "MAIN",
@@ -8,16 +45,44 @@ chrome.action.onClicked.addListener(async (tab) => {
             });
 
             if (results && results[0] && results[0].result) {
-                await processAndSaveData(results[0].result);
-                chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+                const numCars = await processAndSaveData(results[0].result);
+                if (numCars > 0) {
+                    await chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: showToast,
+                        args: [`Success! Synced ${numCars} cars. Opening dashboard...`, "success"]
+                    });
+                    setTimeout(() => {
+                        chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+                    }, 800);
+                } else {
+                    await chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: showToast,
+                        args: ["No saved cars found on this page.", "error"]
+                    });
+                }
             } else {
-                chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+                throw new Error("Could not extract data from the page.");
             }
         } catch (err) {
-            chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: showToast,
+                args: ["Error syncing cars. Please refresh the page and try again.", "error"]
+            });
         }
     } else {
-        chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+        try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: showToast,
+                args: ["Please navigate to your CarGurus 'Saved Cars' page to use this extension.", "error"]
+            });
+        } catch (e) {
+            // Can't inject toast (e.g. on new tab page), fallback to just creating the dashboard directly
+            chrome.tabs.create({ url: chrome.runtime.getURL("dashboard/dashboard.html") });
+        }
     }
 });
 
@@ -32,7 +97,7 @@ async function processAndSaveData(raw) {
         }
     }
 
-    if (listings.length === 0) return;
+    if (listings.length === 0) return 0;
 
     let newCars = {};
 
@@ -97,5 +162,9 @@ async function processAndSaveData(raw) {
         };
     });
 
+    // Clear old storage and save new cars to prevent phantom cars
+    await chrome.storage.local.clear();
     await chrome.storage.local.set({ cars: newCars });
+    
+    return Object.keys(newCars).length;
 }
