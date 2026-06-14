@@ -20,13 +20,21 @@ let currentFilters = {
 
 function formatAddress(addr) {
     if (!addr) return "N/A";
-    // Usually formatted like "123 Main St, City, ST, Zip, US"
-    // We want to try to break it after the street
     const parts = addr.split(",");
     if (parts.length > 2) {
         return parts[0].trim() + "<br>" + parts.slice(1).join(", ").trim();
     }
     return addr;
+}
+
+function formatPhone(phone) {
+    if (!phone) return "N/A";
+    const cleaned = ("" + phone).replace(/\D/g, "");
+    const match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+        return "(" + match[2] + ") " + match[3] + "-" + match[4];
+    }
+    return phone;
 }
 
 async function init() {
@@ -52,7 +60,7 @@ async function init() {
                 <div class="seller-info">
                     <p><b>${car.Seller}</b></p>
                     <p>${formatAddress(car.SellerAddress || car.Location)}</p>
-                    <p>${car.SellerPhone || ""}</p>
+                    <p>${formatPhone(car.SellerPhone)}</p>
                 </div>
                 <a href="${car.MapsUrl}" target="_blank" class="popup-btn">📍 Navigate</a>
                 <a href="${car.Link}" target="_blank" class="popup-btn">🔗 View Listing</a>
@@ -154,7 +162,7 @@ function renderList() {
                     <div class="detail-row"><span class="detail-label">Trim</span><span class="detail-value">${c.Trim}</span></div>
                     <div class="detail-row"><span class="detail-label">Seller</span><span class="detail-value">${c.Seller}</span></div>
                     <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${formatAddress(c.SellerAddress)}</span></div>
-                    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${c.SellerPhone || "N/A"}</span></div>
+                    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${formatPhone(c.SellerPhone)}</span></div>
                     <div class="detail-row"><span class="detail-label">Distance</span><span class="detail-value">${c.Distance} mi</span></div>
                     <div class="detail-row"><span class="detail-label">Market Days</span><span class="detail-value">${c.DaysOnMarket}</span></div>
                     <div class="detail-row"><span class="detail-label">Deal Rating</span><span class="detail-value">${(c.DealRating || "NA").replace("_", " ")}</span></div>
