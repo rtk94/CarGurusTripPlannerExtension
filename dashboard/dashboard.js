@@ -34,7 +34,7 @@ async function init() {
         
         const popupContent = `
             <div class="car-popup">
-                <img src="${c.ImageURL || "https://via.placeholder.com/200x150?text=No+Image"}">
+                <img src="${car.ImageURL || "https://via.placeholder.com/200x150?text=No+Image"}">
                 <h3>${car.Year} ${car.Make} ${car.Model}</h3>
                 <p class="price">${car.Price}</p>
                 <p>${car.Mileage} mi</p>
@@ -45,7 +45,7 @@ async function init() {
                 </div>
                 <a href="${car.MapsUrl}" target="_blank" class="popup-btn">📍 Navigate</a>
                 <a href="${car.Link}" target="_blank" class="popup-btn">🔗 View Listing</a>
-            </div>`.replace("c.ImageURL", car.ImageURL); // Fixing template error
+            </div>`;
         
         const marker = L.marker(jittered).addTo(map).bindPopup(popupContent);
         marker.on("click", () => {
